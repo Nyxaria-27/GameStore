@@ -1,181 +1,162 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    body {
-        background-color: #1b2838;
-        color: #fff; /* Ensures text is readable on dark background */
-    }
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">Shopping Cart</h1>
+            <p class="text-gray-400">Review your items before checkout</p>
+        </div>
+        <a href="{{ route('home') }}" class="inline-flex items-center px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 hover:text-white transition-all duration-200">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            Continue Shopping
+        </a>
+    </div>
 
-    .card-product {
-        display: flex;
-        align-items: center;
-        background: #2a2f38;
-        border: none;
-        border-radius: 12px;
-        overflow: hidden;
-        margin-bottom: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .card-product:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    }
-
-    .card-product img {
-        width: 350px;
-        height: 350px;
-        object-fit: cover;
-        border-radius: 0;
-        background: #f0f0f0;
-    }
-
-    .card-body {
-        flex-grow: 1;
-        padding: 15px;
-    }
-
-    .card-body h5 {
-        margin-bottom: 8px;
-        font-size: 1.25rem;
-        font-weight: bold;
-        color: #ffffff;
-    }
-
-    .card-body p {
-        margin: 3px 0;
-        color: #777;
-    }
-
-    .quantity-input {
-        width: 70px;
-        height: 40px;
-        text-align: center;
-        font-size: 1rem;
-        margin-top: 8px;
-        margin-bottom: 8px;
-    }
-
-    .total-price {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: #2a9d8f;
-        margin-top: 5px;
-    }
-
-    .actions {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 10px;
-        gap: 10px;
-    }
-
-    .remove-item-btn {
-        font-size: 0.85rem;
-        padding: 6px 12px;
-    }
-
-    /* Tombol checkout, kosongkan keranjang */
-    .clear-cart-btn, .checkout-btn {
-        font-size: 1rem;
-        padding: 10px 16px;
-        border-radius: 8px;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .card-product {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        .card-product img {
-            width: 100%;
-            height: auto;
-        }
-        .actions {
-            flex-direction: row;
-            justify-content: space-between;
-            width: 100%;
-        }
-    }
-</style>
-
-
-
-<div class="container">
-    <h2 class="mb-4">Keranjang Belanja Kamu</h2>
-
+    <!-- Alerts -->
     @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-300 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
             {{ session('success') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
         </div>
     @endif
 
     @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
             {{ session('error') }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
         </div>
     @endif
 
     @if(!empty($cart))
-        <div class="row">
-            @php $total = 0; @endphp
-            @foreach($cart as $id => $item)
-                @php $total += $item['harga'] * $item['quantity']; @endphp
-                <div class="col-12 mb-3">
-                    <div class="card-product">
-                        @if(isset($item['gambar']) && $item['gambar'])
-                        <img src="{{ asset('storage/' . $item['gambar']) }}" class="card-img-top" alt="{{ $item['nama'] }}" style="height: 200px; object-fit: cover;">
-                    @else
-                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
-                            <span class="text-muted">Tidak Ada Gambar</span>
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Cart Items -->
+            <div class="lg:col-span-2 space-y-4">
+                @php $total = 0; @endphp
+                @foreach($cart as $id => $item)
+                    @php $total += $item['harga'] * $item['quantity']; @endphp
+                    <div class="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg overflow-hidden hover:border-white/20 transition-all duration-200">
+                        <div class="flex flex-col sm:flex-row">
+                            <!-- Product Image -->
+                            <div class="sm:w-48 h-48 sm:h-auto flex-shrink-0">
+                                @if(isset($item['gambar']) && $item['gambar'])
+                                    <img src="{{ asset('storage/' . $item['gambar']) }}" 
+                                         alt="{{ $item['nama'] }}" 
+                                         class="w-full h-full object-cover">
+                                @else
+                                    <div class="w-full h-full bg-white/5 flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Product Info -->
+                            <div class="flex-1 p-6 flex flex-col justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-white mb-2">{{ $item['nama'] }}</h3>
+                                    <p class="text-gray-400 text-sm mb-4">Rp {{ number_format($item['harga'], 0, ',', '.') }} per item</p>
+                                    
+                                    <!-- Quantity Control -->
+                                    <div class="flex items-center space-x-4 mb-3">
+                                        <label class="text-gray-400 text-sm">Quantity:</label>
+                                        <input type="number" 
+                                               class="quantity-input w-20 px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-center focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                               data-id="{{ $id }}" 
+                                               value="{{ $item['quantity'] }}" 
+                                               min="1">
+                                    </div>
+
+                                    <!-- Item Total -->
+                                    <p class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+                                        Total: Rp {{ number_format($item['harga'] * $item['quantity'], 0, ',', '.') }}
+                                    </p>
+                                </div>
+
+                                <!-- Remove Button -->
+                                <div class="mt-4">
+                                    <button class="remove-item-btn inline-flex items-center px-4 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 text-red-300 rounded-lg transition-all duration-200" data-id="{{ $id }}">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    @endif
-
-
-                    <div class="card-body">
-                        <h5>{{ $item['nama'] }}</h5>
-                        <p>Rp {{ number_format($item['harga'], 0, ',', '.') }}</p>
-                        <input type="number" class="form-control quantity-input" data-id="{{ $id }}" value="{{ $item['quantity'] }}" min="1">
-                        <p class="total-price">Total: Rp {{ number_format($item['harga'] * $item['quantity'], 0, ',', '.') }}</p>
                     </div>
-                    <div class="actions">
-                        <button class="btn btn-danger remove-item-btn" data-id="{{ $id }}">
-                            <i class="fa fa-trash"></i> Hapus
-                        </button>
+                @endforeach
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 shadow-lg p-6 sticky top-8">
+                    <h2 class="text-2xl font-bold text-white mb-6">Order Summary</h2>
+                    
+                    <div class="space-y-4 mb-6">
+                        <div class="flex justify-between text-gray-400">
+                            <span>Subtotal</span>
+                            <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span>Tax (0%)</span>
+                            <span>Rp 0</span>
+                        </div>
+                        <div class="border-t border-white/10 pt-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-lg font-semibold text-white">Total</span>
+                                <span class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-600">
+                                    Rp {{ number_format($total, 0, ',', '.') }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                </div>
-            @endforeach
-        </div>
 
-        <h4 class="mt-3">Total Belanja: <strong>Rp {{ number_format($total, 0, ',', '.') }}</strong></h4>
+                    <!-- Checkout Button -->
+                    <a href="{{ route('keranjang.checkout') }}" 
+                       id="btn-checkout"
+                       class="block w-full py-4 px-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-xl text-center transition-all duration-200 shadow-lg shadow-green-500/30 mb-3">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                        </svg>
+                        Proceed to Checkout
+                    </a>
 
-        <div class="d-flex gap-2 flex-wrap mt-2">
-            <button class="btn btn-warning clear-cart-btn">
-                <i class="fa fa-trash"></i> Kosongkan Keranjang
-            </button>
-            <a href="{{ route('keranjang.checkout') }}" class="btn btn-success checkout-btn" id="btn-checkout">
-                <i class="fa fa-credit-card"></i> Checkout
-            </a>
-            <a href="{{ route('home') }}" class="btn btn-secondary">
-                <i class="fa fa-home"></i> Kembali ke Home
-            </a>
+                    <!-- Clear Cart Button -->
+                    <button class="clear-cart-btn w-full py-3 px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white rounded-xl transition-all duration-200">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Clear Cart
+                    </button>
+                </div>
+            </div>
         </div>
     @else
-        <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 70vh;">
-            <h3 class="text-muted mb-4" style="color: #fff !important;">🛒 Keranjang belanja kamu kosong</h3>
-            <a href="{{ route('home') }}" class="btn btn-lg btn-primary text-white" style="background-color: #007bff;">
-                <i class="fa fa-home me-2"></i> Kembali ke Home
+        <!-- Empty Cart -->
+        <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+            <div class="mb-8">
+                <svg class="w-32 h-32 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <h3 class="text-2xl font-bold text-gray-400 mb-2">Your cart is empty</h3>
+                <p class="text-gray-500">Add some amazing games to get started!</p>
+            </div>
+            <a href="{{ route('home') }}" 
+               class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-purple-500/30">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Browse Games
             </a>
         </div>
     @endif
@@ -205,7 +186,13 @@
                     if (data.success) {
                         location.reload();
                     } else {
-                        alert("Gagal memperbarui jumlah produk.");
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Failed!',
+                            text: 'Failed to update quantity.',
+                            background: '#1e293b',
+                            color: '#f1f5f9'
+                        });
                     }
                 })
                 .catch(error => console.error('Error:', error));
@@ -217,14 +204,19 @@
             event.preventDefault();
 
             Swal.fire({
-                title: "Lanjutkan ke Checkout?",
-                html: "Total belanja Anda: <strong>Rp " + totalBelanja.toLocaleString('id-ID') + "</strong><br>Pastikan semua produk sudah benar.",
+                title: "Continue to Checkout?",
+                html: "Total amount: <strong>Rp " + totalBelanja.toLocaleString('id-ID') + "</strong><br>Please verify all items are correct.",
                 icon: "question",
                 showCancelButton: true,
-                confirmButtonColor: "#28a745",
-                cancelButtonColor: "#6c757d",
-                confirmButtonText: "Ya, Checkout",
-                cancelButtonText: "Batal"
+                confirmButtonColor: "#10b981",
+                cancelButtonColor: "#6b7280",
+                confirmButtonText: "Yes, Checkout",
+                cancelButtonText: "Cancel",
+                background: '#1e293b',
+                color: '#f1f5f9',
+                customClass: {
+                    popup: 'border border-white/10'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = this.href;
@@ -238,14 +230,19 @@
                 let id = this.getAttribute('data-id');
 
                 Swal.fire({
-                    title: "Yakin ingin menghapus?",
-                    text: "Produk ini akan dihapus dari keranjang.",
+                    title: "Remove this item?",
+                    text: "This product will be removed from your cart.",
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonColor: "#d33",
-                    cancelButtonColor: "#3085d6",
-                    confirmButtonText: "Ya, hapus!",
-                    cancelButtonText: "Batal"
+                    confirmButtonColor: "#dc2626",
+                    cancelButtonColor: "#6b7280",
+                    confirmButtonText: "Yes, remove it!",
+                    cancelButtonText: "Cancel",
+                    background: '#1e293b',
+                    color: '#f1f5f9',
+                    customClass: {
+                        popup: 'border border-white/10'
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
                         fetch("{{ route('keranjang.remove') }}", {
@@ -259,11 +256,25 @@
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
-                                Swal.fire("Dihapus!", "Produk telah dihapus.", "success").then(() => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Removed!',
+                                    text: 'Product has been removed.',
+                                    background: '#1e293b',
+                                    color: '#f1f5f9',
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                }).then(() => {
                                     location.reload();
                                 });
                             } else {
-                                Swal.fire("Gagal!", "Produk gagal dihapus.", "error");
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Failed!',
+                                    text: 'Failed to remove product.',
+                                    background: '#1e293b',
+                                    color: '#f1f5f9'
+                                });
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -275,14 +286,19 @@
         // Kosongkan seluruh keranjang dengan SweetAlert
         document.querySelector('.clear-cart-btn')?.addEventListener('click', function() {
             Swal.fire({
-                title: "Yakin ingin mengosongkan keranjang?",
-                text: "Semua produk akan dihapus.",
+                title: "Clear entire cart?",
+                text: "All products will be removed.",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor: "#3085d6",
-                confirmButtonText: "Ya, kosongkan!",
-                cancelButtonText: "Batal"
+                confirmButtonColor: "#dc2626",
+                cancelButtonColor: "#6b7280",
+                confirmButtonText: "Yes, clear it!",
+                cancelButtonText: "Cancel",
+                background: '#1e293b',
+                color: '#f1f5f9',
+                customClass: {
+                    popup: 'border border-white/10'
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     fetch("{{ route('keranjang.clear') }}", {
@@ -294,23 +310,31 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            Swal.fire("Dikosongkan!", "Keranjang telah dikosongkan.", "success").then(() => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cleared!',
+                                text: 'Cart has been cleared.',
+                                background: '#1e293b',
+                                color: '#f1f5f9',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
                                 location.reload();
                             });
                         } else {
-                            Swal.fire("Gagal!", "Gagal mengosongkan keranjang.", "error");
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed!',
+                                text: 'Failed to clear cart.',
+                                background: '#1e293b',
+                                color: '#f1f5f9'
+                            });
                         }
                     })
                     .catch(error => console.error('Error:', error));
                 }
             });
         });
-
-        // Disabled tombol Checkout jika keranjang kosong
-        let checkoutButton = document.querySelector('.checkout-btn');
-        if (!document.querySelector('.quantity-input')) {
-            checkoutButton.setAttribute('disabled', 'disabled');
-        }
     });
 </script>
 @endsection
