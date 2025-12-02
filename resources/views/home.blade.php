@@ -1,177 +1,133 @@
-    @extends('layouts.app')
+@extends('layouts.app')
 
-    @section('content')
-    <style>
-        body {
-            background-color: #171a21;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: #c7d5e0;
-        }
-
-        .store-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-
-        .store-header h4 {
-            font-size: 1.8rem;
-            color: #66c0f4;
-        }
-
-        .card {
-            background-color: #2a2f38;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.75);
-            min-height: 420px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hover-card:hover {
-            transform: scale(1.02);
-            cursor: pointer;
-            box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-        }
-
-        .card-img-top {
-            height: 200px;
-            object-fit: cover;
-        }
-
-        .card-body {
-            flex: 1;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .card-title {
-            font-weight: bold;
-            color: #ffffff;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .card-text {
-            color: #c7d5e0;
-            font-size: 0.9rem;
-            margin-bottom: 0.3rem;
-            flex-grow: 1;
-        }
-
-        .price-tag {
-            font-size: 1rem;
-            color: #a4d007;
-            font-weight: bold;
-            margin: 0.5rem 0;
-        }
-
-        .input-group input {
-            background-color: #1b2838;
-            border: 1px solid #66c0f4;
-            color: #c7d5e0;
-        }
-
-        .btn-search {
-            background-color: #66c0f4;
-            color: white;
-            border: none;
-        }
-
-        .alert-success {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .badge.bg-danger {
-            background-color: #ff4c4c !important;
-        }
-
-        a.text-decoration-none:hover {
-            text-decoration: none;
-        }
-    </style>
-
-    <div class="container py-5">
-        <div class="store-header">
-            <h4>🎮 Maduriar Game Store</h4>
-            <div class="d-flex gap-2">
-                <a href="{{ route('transactions.index') }}" class="btn btn-outline-light btn-lg">
-                    <i class="fa fa-clock-rotate-left me-1"></i> Riwayat
-                </a>
-                <a href="{{ route('keranjang.index') }}" class="btn btn-warning position-relative btn-lg">
-                    <i class="fa fa-shopping-cart me-1"></i> Keranjang
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count">
-                        {{ session('cart') ? count(session('cart')) : 0 }}
-                    </span>
-                </a>
-            </div>
+@section('content')
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white mb-2">🎮 Game Store</h1>
+            <p class="text-gray-400">Discover and explore amazing games</p>
         </div>
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ route('transactions.index') }}" class="inline-flex items-center px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-gray-300 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                History
+            </a>
+            <a href="{{ route('keranjang.index') }}" class="relative inline-flex items-center px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 rounded-lg text-white font-medium shadow-lg shadow-orange-500/50 transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Cart
+                @if(session('cart') && count(session('cart')) > 0)
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                        {{ count(session('cart')) }}
+                    </span>
+                @endif
+            </a>
+        </div>
+    </div>
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
+    <!-- Success Alert -->
+    @if(session('success'))
+        <div class="mb-6 p-4 bg-green-500/20 border border-green-500/50 rounded-xl text-green-300 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {{ session('success') }}
+        </div>
+    @endif
 
-        <form action="{{ route('produk.index') }}" method="GET" class="mb-4">
-            <div class="input-group">
-                <input type="text" name="search" class="form-control" placeholder="Cari game seru..." value="{{ request('search') }}">
-                <button class="btn btn-search" type="submit">
-                    <i class="fa fa-search"></i>
-                </button>
+    <!-- Search & Filter Section -->
+    <div class="mb-8 space-y-4">
+        <form action="{{ route('produk.index') }}" method="GET" class="flex gap-2">
+            <div class="flex-1 relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text" name="search" value="{{ request('search') }}"
+                    class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    placeholder="Search for games...">
             </div>
+            <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-xl text-white font-medium shadow-lg shadow-purple-500/50 transition-all duration-200">
+                Search
+            </button>
         </form>
 
-        <form action="{{ route('produk.index') }}" method="GET" class="mb-4 row g-2 align-items-center">
-            <div class="col-md-4 offset-md-8 d-flex justify-content-end">
-                <select name="kategori" class="form-select" onchange="this.form.submit()" style="max-width: 250px; background-color: #1b2838; color: #c7d5e0; border: 1px solid #66c0f4;">
-                    <option value="">Semua Kategori</option>
-                    @foreach($kategoris as $kategori)
-                        <option value="{{ $kategori->id }}" {{ request('kategori') == $kategori->id ? 'selected' : '' }}>
-                            {{ $kategori->nama }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+        <form action="{{ route('produk.index') }}" method="GET" class="flex justify-end">
+            <select name="kategori" onchange="this.form.submit()"
+                class="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                <option value="">All Categories</option>
+                @foreach($kategoris as $kategori)
+                    <option value="{{ $kategori->id }}" {{ request('kategori') == $kategori->id ? 'selected' : '' }}>
+                        {{ $kategori->nama }}
+                    </option>
+                @endforeach
+            </select>
         </form>
+    </div>
 
-        @can('create', App\Models\Produk::class)
-            <div class="mb-4">
-                <a href="{{ route('produk.create') }}" class="btn btn-success">
-                    <i class="fa fa-plus me-1"></i> Tambah Produk
-                </a>
-            </div>
-        @endcan
+    <!-- Add Product Button (Admin Only) -->
+    @can('create', App\Models\Produk::class)
+        <div class="mb-6">
+            <a href="{{ route('produk.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium shadow-lg transition-all duration-200">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Product
+            </a>
+        </div>
+    @endcan
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <!-- Products Grid -->
+    @if($produks->isEmpty())
+        <div class="text-center py-16">
+            <svg class="w-24 h-24 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-400 mb-2">No Products Available</h3>
+            <p class="text-gray-500">Check back later for new games!</p>
+        </div>
+    @else
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @foreach($produks as $produk)
-                <div class="col">
-                    <div class="card h-100 hover-card">
-                        <a href="{{ route('produk.show', $produk->id) }}" class="text-decoration-none text-light">
-                            @if($produk->gambar)
-                                <img src="{{ asset('storage/' . $produk->gambar) }}" class="card-img-top" alt="{{ $produk->nama }}">
-                            @else
-                                <div class="card-img-top bg-dark d-flex align-items-center justify-content-center" style="height: 200px;">
-                                    <span class="text-muted">Tidak Ada Gambar</span>
-                                </div>
-                            @endif
-                        </a>
-                        <div class="card-body">
-                            <h6 class="card-title">{{ $produk->nama }}</h6>
-                            <p class="card-text">{{ \Illuminate\Support\Str::limit($produk->deskripsi, 120) }}</p>
-                            <p class="card-text"><strong>Kategori:</strong> {{ $produk->kategori->nama ?? '-' }}</p>
-                            <p class="price-tag">Rp {{ number_format($produk->harga, 0, ',', '.') }}</p>
+                <div class="group bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden hover:border-white/20 hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 hover:-translate-y-1">
+                    <a href="{{ route('produk.show', $produk->id) }}" class="block">
+                        @if($produk->gambar)
+                            <div class="relative overflow-hidden aspect-video">
+                                <img src="{{ asset('storage/' . $produk->gambar) }}" alt="{{ $produk->nama }}"
+                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            </div>
+                        @else
+                            <div class="aspect-video bg-slate-800/50 flex items-center justify-center">
+                                <svg class="w-16 h-16 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                            </div>
+                        @endif
+                    </a>
 
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold text-white mb-2 truncate">{{ $produk->nama }}</h3>
+                        <p class="text-sm text-gray-400 mb-2 line-clamp-2">
+                            {{ \Illuminate\Support\Str::limit($produk->deskripsi, 80) }}
+                        </p>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs text-gray-500 bg-white/5 px-2 py-1 rounded">
+                                {{ $produk->kategori->nama ?? 'Uncategorized' }}
+                            </span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xl font-bold text-green-400">
+                                Rp {{ number_format($produk->harga, 0, ',', '.') }}
+                            </span>
                             @can('update', $produk)
-                                <a href="{{ route('produk.edit', $produk->id) }}" class="btn btn-warning btn-sm mt-2">
-                                    <i class="fa fa-edit me-1"></i> Edit
+                                <a href="{{ route('produk.edit', $produk->id) }}" class="px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 rounded-lg text-amber-400 text-sm font-medium transition-colors">
+                                    Edit
                                 </a>
                             @endcan
                         </div>
@@ -179,11 +135,6 @@
                 </div>
             @endforeach
         </div>
-
-        @if($produks->isEmpty())
-            <div class="text-center text-muted mt-4">
-                <p>Belum ada produk yang tersedia.</p>
-            </div>
-        @endif
-    </div>
-    @endsection
+    @endif
+</div>
+@endsection

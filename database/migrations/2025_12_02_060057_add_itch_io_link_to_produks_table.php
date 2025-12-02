@@ -9,13 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        Schema::table('games', function (Blueprint $table) {
-            $table->string('file_game')->nullable()->after('itch_io_link');
+        Schema::table('produks', function (Blueprint $table) {
+            $table->string('itch_io_link')->nullable()->after('kategori_id');
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -23,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('produks', function (Blueprint $table) {
-            //
+            $table->dropColumn('itch_io_link');
         });
     }
 };

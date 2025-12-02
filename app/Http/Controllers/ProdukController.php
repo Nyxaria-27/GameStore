@@ -57,6 +57,7 @@ public function store(Request $request)
         'deskripsi' => 'nullable|string',
     ]);
 
+    // Include all fields including itch_io_link
     $data = $request->only(['kode_produk', 'nama', 'harga', 'kategori_id', 'itch_io_link', 'deskripsi']);
 
     // Upload gambar (jika ada)
@@ -76,14 +77,14 @@ public function store(Request $request)
         $zip->move(storage_path('app/public/games_zip'), $zipName . '.zip');
 
         // Ekstrak
-        $zipArchive = new ZipArchive;
-        if ($zipArchive->open($zipPath) === TRUE) {
-            $zipArchive->extractTo($extractPath);
-            $zipArchive->close();
-            $data['file_game'] = 'games_extracted/' . $zipName;
-        } else {
-            return back()->with('error', 'Gagal mengekstrak file ZIP.');
-        }
+        // $zipArchive = new ZipArchive;
+        // if ($zipArchive->open($zipPath) === TRUE) {
+        //     $zipArchive->extractTo($extractPath);
+        //     $zipArchive->close();
+        //     $data['file_game'] = 'games_extracted/' . $zipName;
+        // } else {
+        //     return back()->with('error', 'Gagal mengekstrak file ZIP.');
+        // }
     }
 
     Produk::create($data);
@@ -109,7 +110,7 @@ public function update(Request $request, $id)
         'nama' => 'required',
         'harga' => 'required|numeric|min:0',
         'kategori_id' => 'required|exists:kategoris,id',
-        'itch_io_link' => 'required|url',
+        'itch_io_link' => 'nullable|url',
         'deskripsi' => 'nullable|string',
         'gambar' => 'nullable|image',
         'file_game' => 'nullable|mimes:zip|max:500000',

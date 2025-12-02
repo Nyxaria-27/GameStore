@@ -12,8 +12,8 @@ class ProdukPolicy
 
     public function create(User $user)
     {
-        // Admin dan user biasa boleh create
-        return in_array($user->role, ['admin', 'user']);
+        // Only admin can create products
+        return $user->role === 'admin';
     }
 
     public function update(User $user, Produk $produk)

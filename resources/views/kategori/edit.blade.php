@@ -1,47 +1,72 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm" style="background-color: #1B2538; color: #ffffff;">
-                <div class="card-header bg-warning text-white">
-                    <h5 class="mb-0">Edit Kategori</h5>
-                </div>
-                <div class="card-body">
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-white mb-2">Edit Category</h1>
+        <p class="text-gray-400">Update category information</p>
+    </div>
 
-                    @if($errors->any())
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <form action="{{ route('kategori.update', $kategori->id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-
-                        <div class="mb-3">
-                            <label for="nama" class="form-label text-white">Nama Kategori</label>
-                            <input type="text" name="nama" class="form-control bg-dark text-white border-secondary" value="{{ $kategori->nama }}" required>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('kategori.index') }}" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left"></i> Kembali
-                            </a>
-                            <button type="submit" class="btn btn-warning text-white">
-                                <i class="fa fa-save"></i> Update
-                            </button>
-                        </div>
-                    </form>
-
-                </div>
+    <!-- Error Alert -->
+    @if($errors->any())
+        <div class="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-300">
+            <div class="flex items-start">
+                <svg class="w-5 h-5 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
+    @endif
+
+    <!-- Form Card -->
+    <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl overflow-hidden">
+        <div class="p-8">
+            <form action="{{ route('kategori.update', $kategori->id) }}" method="POST" class="space-y-6">
+                @csrf
+                @method('PUT')
+
+                <!-- Category Name -->
+                <div>
+                    <label for="nama" class="block text-sm font-medium text-gray-300 mb-2">
+                        Category Name <span class="text-red-400">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                        </div>
+                        <input type="text" name="nama" id="nama" value="{{ $kategori->nama }}" required
+                            class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            placeholder="e.g., Action, Adventure, RPG">
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                    <button type="submit" class="flex-1 py-3 px-6 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-medium rounded-xl shadow-lg shadow-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all duration-200">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Update Category
+                    </button>
+                    <a href="{{ route('kategori.index') }}" class="flex-1 py-3 px-6 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white font-medium rounded-xl text-center transition-all duration-200">
+                        <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                        </svg>
+                        Back
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
+
 </div>
 @endsection
